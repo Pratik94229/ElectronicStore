@@ -1,15 +1,12 @@
 package com.pratik.electronic.store.ElectronicStore.services.impl;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.pratik.electronic.store.ElectronicStore.dtos.UserDto;
@@ -20,107 +17,117 @@ import com.pratik.electronic.store.ElectronicStore.services.UserService;
 @Service
 public class UserServiceImpl implements UserService {
 
-  @Autowired
-  private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-  @Override
-  public UserDto createUser(UserDto userDto) {
+    @Autowired
+    private ModelMapper mapper;
 
-    // generate unique id in string format
-    String userId = UUID.randomUUID().toString();
-    userDto.setUserId(userId);
+    @Override
+    public UserDto createUser(UserDto userDto) {
 
-    // DTO -> Entity
-    User user = dtotoEntity(userDto);
-    User savedUser = userRepository.save(user);
+        // generate unique id in string format
+        String userId = UUID.randomUUID().toString();
+        userDto.setUserId(userId);
 
-    // entity->DTO
-    UserDto newDto = entityToDto(savedUser);
-    return newDto;
-  }
+        // DTO -> Entity
+        User user = dtotoEntity(userDto);
+        User savedUser = userRepository.save(user);
 
-  private UserDto entityToDto(User savedUser) {
-    UserDto userDto = UserDto.builder()
-        .userId(savedUser.getUserId())
-        .name(savedUser.getName())
-        .email(savedUser.getEmail())
-        .password(savedUser.getPassword())
-        .about(savedUser.getAbout())
-        .gender(savedUser.getGender())
-        .imageName(savedUser.getImageName())
-        .build();
-    return userDto;
-  }
+        // entity->DTO
+        UserDto newDto = entityToDto(savedUser);
+        return newDto;
+    }
 
-  private User dtotoEntity(UserDto userDto) {
-    User user = User.builder()
-        .userId(userDto.getUserId())
-        .name(userDto.getName())
-        .email(userDto.getEmail())
-        .password(userDto.getPassword())
-        .about(userDto.getAbout())
-        .gender(userDto.getGender())
-        .imageName(userDto.getImageName())
-        .build();
+    @Override
+    public UserDto updateUser(UserDto userDto, String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with given id !!"));
+        user.setName(userDto.getName());
 
-    return user;
-  }
+        // email update
+        user.setAbout(userDto.getAbout());
+        user.setGender(userDto.getGender());
 
-  @Override
-  public UserDto updateUser(UserDto userDto, String userId) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("User not found with given id !!"));
-    user.setName(userDto.getName());
+        user.setPassword(userDto.getPassword());
 
-    // email update
-    user.setAbout(userDto.getAbout());
-    user.setGender(userDto.getGender());
+        user.setImageName(userDto.getImageName());
 
-    user.setPassword(userDto.getPassword());
+        // save data
+        User updatedUser = userRepository.save(user);
 
-    user.setImageName(userDto.getImageName());
+        UserDto updatedDto = entityToDto(updatedUser);
 
-    // save data
-    User updatedUser = userRepository.save(user);
+        return updatedDto;
+    }
 
-    UserDto updatedDto = entityToDto(updatedUser);
+    @Override
+    public void deleteUser(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with given id !!"));
 
-    return updatedDto;
-  }
+        // delete user
+        userRepository.delete(user);
+    }
 
-  @Override
-  public void deleteUser(String userId) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("User not found with given id !!"));
+    @Override
+    public List<UserDto> getAllUser() {
+        List<User> users = userRepository.findAll();
+        List<UserDto> dtoList = users.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
+        return dtoList;
+    }
 
-    // delete user
-    userRepository.delete(user);
-  }
+    @Override
+    public UserDto getUserById(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("user not found with given id !!"));
+        return entityToDto(user);
+    }
 
-  @Override
-  public List<UserDto> getAllUser() {
-    List<User> users = userRepository.findAll();
-    List<UserDto> dtoList = users.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
-    return dtoList;
-  }
+    @Override
+    public UserDto getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found with given email id !!"));
+        return entityToDto(user);
+    }
 
-  @Override
-  public UserDto getUserById(String userId) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new ResourceNotFoundException("user not found with given id !!"));
-    return entityToDto(user);
-  }
+    @Override
+    public List<UserDto> searchUser(String keyword) {
+        List<User> users = userRepository.findByNameContaining(keyword);
+        List<UserDto> dtoList = users.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
+        return dtoList;
+    }
 
-  @Override
-  public UserDto getUserByEmail(String email) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getUserByEmail'");
-  }
 
-  @Override
-  public List<UserDto> searchUser(String keyword) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'searchUser'");
-  }
+//    @Override
+//    public Optional<User> findUserByEmailOptional(String email) {
+//        return userRepository.findByEmail(email);
+//    }
+
+    private UserDto entityToDto(User savedUser) {
+//    UserDto userDto = UserDto.builder()
+//        .userId(savedUser.getUserId())
+//        .name(savedUser.getName())
+//        .email(savedUser.getEmail())
+//        .password(savedUser.getPassword())
+//        .about(savedUser.getAbout())
+//        .gender(savedUser.getGender())
+//        .imageName(savedUser.getImageName())
+//        .build();
+        return mapper.map(savedUser, UserDto.class);
+    }
+
+    private User dtotoEntity(UserDto userDto) {
+//    User user = User.builder()
+//        .userId(userDto.getUserId())
+//        .name(userDto.getName())
+//        .email(userDto.getEmail())
+//        .password(userDto.getPassword())
+//        .about(userDto.getAbout())
+//        .gender(userDto.getGender())
+//        .imageName(userDto.getImageName())
+//        .build();
+
+        return mapper.map(userDto, User.class);
+    }
 
 }

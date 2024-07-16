@@ -1,34 +1,41 @@
 package com.pratik.electronic.store.ElectronicStore.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.pratik.electronic.store.ElectronicStore.dtos.UserDto;
+import com.pratik.electronic.store.ElectronicStore.entities.User;
 
 public interface UserService {
 
-  // create
+
+  //create
   UserDto createUser(UserDto userDto);
 
-  // update
+
+  //update
   UserDto updateUser(UserDto userDto, String userId);
 
-  // delete
+  //delete
   void deleteUser(String userId);
 
-  // get all users
+
+  //get all users
   List<UserDto> getAllUser();
 
-  // get single user by id
+
+
+  //get single user by id
   UserDto getUserById(String userId);
 
-  // get single user by email
+  //get  single user by email
   UserDto getUserByEmail(String email);
 
-  // search user
+  //search user
   List<UserDto> searchUser(String keyword);
 
-  // other user specific features
+  //other user specific features
 
-  // Optional<User> findUserByEmailOptional(String email);
+  //Optional<User> findUserByEmailOptional(String email);
 
 }
