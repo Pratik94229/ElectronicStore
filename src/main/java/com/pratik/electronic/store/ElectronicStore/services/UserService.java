@@ -1,5 +1,6 @@
 package com.pratik.electronic.store.ElectronicStore.services;
 
+import com.pratik.electronic.store.ElectronicStore.dtos.PageableResponse;
 import com.pratik.electronic.store.ElectronicStore.dtos.UserDto;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface UserService {
 
 
     //get all users
-    List<UserDto> getAllUser(int pageNumber, int pageSize, String sortBy, String sortDir);
+    PageableResponse<UserDto> getAllUser(int pageNumber, int pageSize, String sortBy, String sortDir);
 
 
     //get single user by id
