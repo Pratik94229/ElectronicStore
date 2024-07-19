@@ -18,43 +18,50 @@ public class FileServiceImpl implements FileService {
 
     private Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
 
-    @Override
     public String uploadFile(MultipartFile file, String path) throws IOException {
-
-        //abc.png
+        // Original file name
         String originalFilename = file.getOriginalFilename();
         logger.info("Filename : {}", originalFilename);
+
+        // Generate a unique filename
         String filename = UUID.randomUUID().toString();
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         String fileNameWithExtension = filename + extension;
-        String fullPathWithFileName = path  + fileNameWithExtension;
 
-        logger.info("full image path: {} ", fullPathWithFileName);
+        // Full path where the file will be stored
+        String fullPathWithFileName = path + fileNameWithExtension;
+        logger.info("Full image path: {}", fullPathWithFileName);
+
+        // Check if the file extension is allowed
         if (extension.equalsIgnoreCase(".png") || extension.equalsIgnoreCase(".jpg") || extension.equalsIgnoreCase(".jpeg")) {
+            logger.info("File extension is {}", extension);
 
-            //file save
-            logger.info("file extension is {} ", extension);
-
-            //Checks if the target folder exists; if not, creates it.
+            // Ensure the directory exists, if not, create it
             File folder = new File(path);
             if (!folder.exists()) {
-                //create the folder
-                folder.mkdirs();
-
+                logger.info("Directory does not exist, creating now: {}", path);
+                boolean dirsCreated = folder.mkdirs();
+                if (dirsCreated) {
+                    logger.info("Directory created successfully.");
+                } else {
+                    logger.error("Failed to create directory: {}", path);
+                    throw new IOException("Failed to create directory: " + path);
+                }
+            } else {
+                logger.info("Directory already exists: {}", path);
             }
 
-            //upload
-
-            //Copies the file content to the target path.
+            // Copy the file to the target location
+            logger.info("Saving file to {}", fullPathWithFileName);
             Files.copy(file.getInputStream(), Paths.get(fullPathWithFileName));
+            logger.info("File saved successfully.");
             return fileNameWithExtension;
 
         } else {
-            throw new BadApiRequestException("File with this " + extension + " not allowed !!");
+            throw new BadApiRequestException("File with this " + extension + " not allowed!!");
         }
-
-
     }
+
 
     @Override
     public InputStream getResource(String path, String name) throws FileNotFoundException {
@@ -62,8 +69,6 @@ public class FileServiceImpl implements FileService {
         InputStream inputStream = new FileInputStream(fullPath);
         return inputStream;
     }
-
-
 
 
 }

@@ -8,13 +8,19 @@ import com.pratik.electronic.store.ElectronicStore.helper.Helper;
 import com.pratik.electronic.store.ElectronicStore.repositories.UserRepository;
 import com.pratik.electronic.store.ElectronicStore.services.UserService;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,6 +33,11 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ModelMapper mapper;
+
+    @Value("${user.profile.image.path}")
+    private String imagePath;
+
+    private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -68,11 +79,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(String userId) {
+        logger.info("Attempting to delete user with id: {}", userId);
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with given id !!"));
 
-        // delete user
+        logger.info("Found user: {}", user);
+
+        // Delete user profile image
+        String fullPath = imagePath + user.getImageName();
+        Path path = Paths.get(fullPath);
+
+        if (Files.exists(path)) {
+            try {
+                Files.delete(path);
+                logger.info("Deleted user image at path: {}", fullPath);
+            } catch (IOException e) {
+                logger.error("Error deleting user image at path: {}", fullPath, e);
+            }
+        } else {
+            logger.info("User image does not exist at path: {}", fullPath);
+        }
+
+        // Delete user
         userRepository.delete(user);
+        logger.info("User deleted successfully: {}", user);
     }
 
 
@@ -83,7 +114,7 @@ public class UserServiceImpl implements UserService {
 
 
         //  pageNumber default starts from 0
-        PageRequest pageable = PageRequest.of(pageNumber, pageSize,sort);
+        PageRequest pageable = PageRequest.of(pageNumber, pageSize, sort);
 
         Page<User> page = userRepository.findAll(pageable);
 

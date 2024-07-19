@@ -58,14 +58,17 @@ public class UserController {
 
     }
 
-    //Delete
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponseMessage> deleteUser(@PathVariable String userId) {
         userService.deleteUser(userId);
-        ApiResponseMessage userDeletedSuccessfully = ApiResponseMessage.builder().message("User Deleted Successfully").success(true).status(HttpStatus.OK).build();
+        ApiResponseMessage userDeletedSuccessfully = ApiResponseMessage.builder()
+                .message("User Deleted Successfully")
+                .success(true)
+                .status(HttpStatus.OK)
+                .build();
         return new ResponseEntity<>(userDeletedSuccessfully, HttpStatus.OK);
-
     }
+
 
     //Get all users
     @GetMapping
