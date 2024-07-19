@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
 
 
         logger.info("Exception Handler Invoked");
-        ApiResponseMessage responseMessage = ApiResponseMessage.builder().message(ex.getMessage()).status(HttpStatus.NOT_FOUND).build();
+        ApiResponseMessage responseMessage = ApiResponseMessage.builder().message(ex.getMessage()).status(HttpStatus.NOT_FOUND).success(true).build();
 
         return new ResponseEntity(responseMessage, HttpStatus.NOT_FOUND);
 
@@ -48,6 +48,19 @@ public class GlobalExceptionHandler {
         });
 
         return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+
+    }
+
+    //Handle bad API exception
+    @ExceptionHandler(BadApiRequestException.class)
+    public ResponseEntity<ApiResponseMessage> handleBadApiRequest(BadApiRequestException ex) {
+
+
+        logger.info("Exception Handler Invoked");
+
+        ApiResponseMessage responseMessage = ApiResponseMessage.builder().message(ex.getMessage()).status(HttpStatus.BAD_REQUEST).success(false).build();
+
+        return new ResponseEntity(responseMessage, HttpStatus.BAD_REQUEST);
 
     }
 }
