@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-
 @Service
 public class FileServiceImpl implements FileService {
 
@@ -33,7 +32,8 @@ public class FileServiceImpl implements FileService {
         logger.info("Full image path: {}", fullPathWithFileName);
 
         // Check if the file extension is allowed
-        if (extension.equalsIgnoreCase(".png") || extension.equalsIgnoreCase(".jpg") || extension.equalsIgnoreCase(".jpeg")) {
+        if (extension.equalsIgnoreCase(".png") || extension.equalsIgnoreCase(".jpg")
+                || extension.equalsIgnoreCase(".jpeg")) {
             logger.info("File extension is {}", extension);
 
             // Ensure the directory exists, if not, create it
@@ -62,7 +62,6 @@ public class FileServiceImpl implements FileService {
         }
     }
 
-
     @Override
     public InputStream getResource(String path, String name) throws FileNotFoundException {
         String fullPath = path + File.separator + name;
@@ -70,6 +69,4 @@ public class FileServiceImpl implements FileService {
         return inputStream;
     }
 
-
 }
-
