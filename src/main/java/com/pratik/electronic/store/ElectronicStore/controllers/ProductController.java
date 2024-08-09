@@ -4,13 +4,7 @@ import com.pratik.electronic.store.ElectronicStore.dtos.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.pratik.electronic.store.ElectronicStore.dtos.ApiResponseMessage;
 import com.pratik.electronic.store.ElectronicStore.dtos.PageableResponse;
@@ -32,12 +26,14 @@ public class ProductController {
   }
 
   // update
+  @PutMapping("/{productId}")
   public ResponseEntity<ProductDto> updateProduct(@PathVariable String productId, @RequestBody ProductDto productDto) {
     ProductDto updatedProduct = productService.update(productDto, productId);
     return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
   }
 
   // delete
+  @DeleteMapping("/{productId}")
   public ResponseEntity<ApiResponseMessage> delete(@PathVariable String productId) {
     productService.delete(productId);
 

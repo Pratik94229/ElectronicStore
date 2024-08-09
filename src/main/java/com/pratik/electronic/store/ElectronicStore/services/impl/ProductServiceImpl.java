@@ -17,6 +17,7 @@ import com.pratik.electronic.store.ElectronicStore.helper.Helper;
 import com.pratik.electronic.store.ElectronicStore.repositories.ProductRepository;
 import com.pratik.electronic.store.ElectronicStore.services.ProductService;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -76,8 +77,10 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public ProductDto get(String productId) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'get'");
+    // fetch the product of given id
+    Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new ResourceNotFoundException("Product not found of given Id !!"));
+    return mapper.map(product, ProductDto.class);
   }
 
   @Override
