@@ -4,6 +4,7 @@ import com.pratik.electronic.store.ElectronicStore.dtos.ApiResponseMessage;
 import com.pratik.electronic.store.ElectronicStore.dtos.CategoryDto;
 import com.pratik.electronic.store.ElectronicStore.dtos.PageableResponse;
 import com.pratik.electronic.store.ElectronicStore.services.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,8 @@ public class CategoryController {
     CategoryService categoryService;
     
     //create
-    @GetMapping
-    public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto categoryDto ){
+    @PostMapping
+    public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody CategoryDto categoryDto ){
         CategoryDto categoryDto1 = categoryService.create(categoryDto);
         return new ResponseEntity<>(categoryDto1, HttpStatus.CREATED);
 
@@ -44,7 +45,6 @@ public class CategoryController {
 
 
     //get all
-
     @GetMapping
     public ResponseEntity<PageableResponse<CategoryDto>> getAll(
             @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
@@ -59,7 +59,6 @@ public class CategoryController {
 
 
     //get single
-
     @GetMapping("/{categoryId}")
     public ResponseEntity<CategoryDto> getSingle(@PathVariable String categoryId) {
         CategoryDto categoryDto = categoryService.get(categoryId);
