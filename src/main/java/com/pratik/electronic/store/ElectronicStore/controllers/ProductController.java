@@ -1,5 +1,6 @@
 package com.pratik.electronic.store.ElectronicStore.controllers;
 
+import com.pratik.electronic.store.ElectronicStore.dtos.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,7 @@ public class ProductController {
 
   // get single
   @GetMapping("/{productId}")
-  public ResponseEntity<ProductDto> getProduct(@PathVariable String productId) {
+  public ResponseEntity<ProductDto> getProductById(@PathVariable String productId) {
     ProductDto productDto = productService.get(productId);
     return new ResponseEntity<>(productDto, HttpStatus.OK);
 

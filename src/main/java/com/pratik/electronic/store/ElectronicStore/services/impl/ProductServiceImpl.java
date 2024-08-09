@@ -1,5 +1,8 @@
 package com.pratik.electronic.store.ElectronicStore.services.impl;
 
+import java.util.Date;
+import java.util.UUID;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +31,16 @@ public class ProductServiceImpl implements ProductService {
   public ProductDto create(ProductDto productDto) {
 
     Product product = mapper.map(productDto, Product.class);
+
+    // product id
+    String productId = UUID.randomUUID().toString();
+    product.setProductId(productId);
+    // added
+
+    // Convert java.util.Date to java.sql.Date
+    java.sql.Date sqlDate = new java.sql.Date(new java.util.Date().getTime());
+    product.setAddedDate(sqlDate);
+
     Product saveProduct = productRepository.save(product);
     return mapper.map(saveProduct, ProductDto.class);
   }
