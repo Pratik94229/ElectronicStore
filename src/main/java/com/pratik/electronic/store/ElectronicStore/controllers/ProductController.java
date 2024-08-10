@@ -1,15 +1,31 @@
 package com.pratik.electronic.store.ElectronicStore.controllers;
 
 import com.pratik.electronic.store.ElectronicStore.dtos.UserDto;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.pratik.electronic.store.ElectronicStore.dtos.ApiResponseMessage;
+import com.pratik.electronic.store.ElectronicStore.dtos.ImageResponse;
 import com.pratik.electronic.store.ElectronicStore.dtos.PageableResponse;
 import com.pratik.electronic.store.ElectronicStore.dtos.ProductDto;
+import com.pratik.electronic.store.ElectronicStore.services.FileService;
 import com.pratik.electronic.store.ElectronicStore.services.ProductService;
+
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/products")
@@ -17,6 +33,14 @@ public class ProductController {
 
   @Autowired
   ProductService productService;
+
+  @Autowired
+  private FileService fileService;
+
+  @Value("${product.image.path}")
+  private String imageUploadPath;
+
+  private Logger logger = LoggerFactory.getLogger(ProductController.class);
 
   // create
   @PostMapping
@@ -92,6 +116,31 @@ public class ProductController {
     PageableResponse<ProductDto> pageableResponse = productService.searchByTitle(query, pageNumber, pageSize, sortBy,
         sortDir);
     return new ResponseEntity<>(pageableResponse, HttpStatus.OK);
+  }
+
+  // upload user image
+  @PostMapping("/image/{productId}")
+  public ResponseEntity<ImageResponse> uploadProductImage(@RequestParam("productImage") MultipartFile image,
+      @PathVariable String productId) throws IOException {
+    String imageName = fileService.uploadFile(image, imageUploadPath);
+    ProductDto productDto = productService.get(productId);
+    productDto.setProductImageName(imageName);
+    productService.update(productDto, productId);
+    ImageResponse imageResponse = ImageResponse.builder().imageName(imageName).success(true)
+        .message("image is uploaded successfully ").status(HttpStatus.CREATED).build();
+    return new ResponseEntity<>(imageResponse, HttpStatus.CREATED);
+
+  }
+
+  // serve user image
+  @GetMapping(value = "/image/{productId}")
+  public void serveUserImage(@PathVariable String productId, HttpServletResponse response) throws IOException {
+    ProductDto productDto = productService.get(productId);
+    logger.info("User image name : {} ", productDto.getProductImageName());
+    InputStream resource = fileService.getResource(imageUploadPath, productDto.getProductImageName());
+    response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+    StreamUtils.copy(resource, response.getOutputStream());
+
   }
 
 }
