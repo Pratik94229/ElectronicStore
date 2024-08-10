@@ -106,9 +106,11 @@ public class UserController {
     public ResponseEntity<ImageResponse> uploadUserImage(@RequestParam("userImage") MultipartFile image,
             @PathVariable String userId) throws IOException {
         String imageName = fileService.uploadFile(image, imageUploadPath);
-        UserDto user = userService.getUserById(userId);
-        user.setImageName(imageName);
-        UserDto userDto = userService.updateUser(user, userId);
+        logger.info(imageName);
+        UserDto userdto = userService.getUserById(userId);
+        logger.info(imageName);
+        userdto.setImageName(imageName);
+        UserDto userDto = userService.updateUser(userdto, userId);
         ImageResponse imageResponse = ImageResponse.builder().imageName(imageName).success(true)
                 .message("image is uploaded successfully ").status(HttpStatus.CREATED).build();
         return new ResponseEntity<>(imageResponse, HttpStatus.CREATED);

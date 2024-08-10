@@ -59,6 +59,7 @@ public class ProductServiceImpl implements ProductService {
     product.setQuantity(productDto.getQuantity());
     product.setLive(productDto.isLive());
     product.setStock(productDto.isStock());
+    product.setProductImageName(productDto.getProductImageName());
 
     // save the entity
     Product updatedProduct = productRepository.save(product);
@@ -76,10 +77,10 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public ProductDto get(String productId) {
+  public ProductDto getProductById(String productId) {
     // fetch the product of given id
     Product product = productRepository.findById(productId)
-            .orElseThrow(() -> new ResourceNotFoundException("Product not found of given Id !!"));
+        .orElseThrow(() -> new ResourceNotFoundException("Product not found of given Id !!"));
     return mapper.map(product, ProductDto.class);
   }
 

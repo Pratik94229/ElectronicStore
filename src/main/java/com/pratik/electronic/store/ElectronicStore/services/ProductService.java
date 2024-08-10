@@ -17,7 +17,7 @@ public interface ProductService {
   void delete(String productId);
 
   // get single
-  ProductDto get(String productId);
+  ProductDto getProductById(String productId);
 
   // get all
   PageableResponse<ProductDto> getAll(int pageNumber, int pageSize, String sortBy, String sortDir);

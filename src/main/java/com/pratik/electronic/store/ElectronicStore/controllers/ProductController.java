@@ -70,7 +70,7 @@ public class ProductController {
   // get single
   @GetMapping("/{productId}")
   public ResponseEntity<ProductDto> getProductById(@PathVariable String productId) {
-    ProductDto productDto = productService.get(productId);
+    ProductDto productDto = productService.getProductById(productId);
     return new ResponseEntity<>(productDto, HttpStatus.OK);
 
   }
@@ -123,9 +123,12 @@ public class ProductController {
   public ResponseEntity<ImageResponse> uploadProductImage(@RequestParam("productImage") MultipartFile image,
       @PathVariable String productId) throws IOException {
     String imageName = fileService.uploadFile(image, imageUploadPath);
-    ProductDto productDto = productService.get(productId);
+    logger.info(imageName);
+    ProductDto productDto = productService.getProductById(productId);
     productDto.setProductImageName(imageName);
-    productService.update(productDto, productId);
+    logger.info(productDto.getProductImageName());
+    ProductDto updatedDto = productService.update(productDto, productId);
+    logger.info(productDto.getProductImageName());
     ImageResponse imageResponse = ImageResponse.builder().imageName(imageName).success(true)
         .message("image is uploaded successfully ").status(HttpStatus.CREATED).build();
     return new ResponseEntity<>(imageResponse, HttpStatus.CREATED);
@@ -135,7 +138,7 @@ public class ProductController {
   // serve user image
   @GetMapping(value = "/image/{productId}")
   public void serveUserImage(@PathVariable String productId, HttpServletResponse response) throws IOException {
-    ProductDto productDto = productService.get(productId);
+    ProductDto productDto = productService.getProductById(productId);
     logger.info("User image name : {} ", productDto.getProductImageName());
     InputStream resource = fileService.getResource(imageUploadPath, productDto.getProductImageName());
     response.setContentType(MediaType.IMAGE_JPEG_VALUE);

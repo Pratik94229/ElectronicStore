@@ -18,6 +18,7 @@ public class FileServiceImpl implements FileService {
     private Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
 
     public String uploadFile(MultipartFile file, String path) throws IOException {
+
         // Original file name
         String originalFilename = file.getOriginalFilename();
         logger.info("Filename : {}", originalFilename);
