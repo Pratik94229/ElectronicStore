@@ -1,7 +1,7 @@
 # Electronic Store Backend
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/Pratik94229/ElectronicStore)
-![GitHub license](https://img.shields.io/github/license/Pratik94229/ElectronicStore)
+![GitHub license](https://img.shields.io/github/license/Pratik94229/Ajay-Residency)
 
 This repository contains the backend implementation of an electronic store application using Java and Spring Boot. The application is designed to manage various operations such as user management, product handling, cart management, and order processing.
 
@@ -104,5 +104,5 @@ Currently implementing spring security.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT License](LICENSE).
 
