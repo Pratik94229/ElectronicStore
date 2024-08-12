@@ -1,6 +1,6 @@
 package com.pratik.electronic.store.ElectronicStore.dtos;
 
-import java.sql.Date;
+import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

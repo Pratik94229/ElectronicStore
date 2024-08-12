@@ -1,5 +1,6 @@
 package com.pratik.electronic.store.ElectronicStore.repositories;
 
+import com.pratik.electronic.store.ElectronicStore.entities.Category;
 import com.pratik.electronic.store.ElectronicStore.entities.Product;
 
 import org.springframework.data.domain.Page;
@@ -13,7 +14,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
   Page<Product> findByLiveTrue(Pageable pageable);
 
-  // Page<Product> findByCategory(Category category,Pageable pageable);
+  Page<Product> findByCategory(Category category, Pageable pageable);
   // other methods
   // custom finder methods
   // query methods
